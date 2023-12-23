@@ -2,17 +2,14 @@
 -- duplicates it is simply copied into the result list. 
 -- Only elements with duplicates are transferred as (N E) lists. 
 
+import Data.List (group)
+
 data Box a = Multiple Int a | Single a
+  deriving Show
 
-pack :: Eq a => [a] -> [[a]]
-pack [] = []
-pack (x:xs) = 
-  (x : takeWhile (== x) xs) 
-  : pack (dropWhile (== x) xs)
+encodeModified' :: [a] -> Box a
+encodeModified' (x:[]) = Single x
+encodeModified' (x:xs) = Multiple (length xs + 1) x 
 
-encode' :: [a] -> Box a
-encode' (x:[]) = Single x
-encode' (x:xs) = Multiple (length xs + 1) x 
-
-encode :: Eq a => [a] -> [Box a]
-encode = map encode' . pack
+encodeModified :: Eq a => [a] -> [Box a]
+encodeModified = map encodeModified' . group
